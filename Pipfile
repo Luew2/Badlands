@@ -1,0 +1,25 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pytest-cov = "*"
+pre-commit = "*"
+# pytest has a couple of Windows-only dependencies, and we explicitly pin them
+# here so our Windows users are not left out when they run `pipenv sync --dev`.
+atomicwrites = {version = ">= 1.0", platform_system = "== 'Windows'"}
+colorama = {version = "*", platform_system = "== 'Windows'"}
+
+[requires]
+python_version = "3.10"
+
+[pipenv]
+# The patch release for PyYAML requires us to resolve prereleases.
+allow_prereleases = false
+
+[packages]
+numpy = "*"
+flake8 = "*"
+black = "*"
+opencv-contrib-python = "*"
