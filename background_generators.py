@@ -3,7 +3,7 @@ import os
 import random
 import numpy as np
 
-def get_random_background_image(background_images_dir, used_backgrounds):
+def get_random_background_image(background_images_dir, used_backgrounds, original_backgrounds=None):
     """
     Selects a random background image from the given background_images_dir, while ensuring that it has not been used before.
     
@@ -11,18 +11,23 @@ def get_random_background_image(background_images_dir, used_backgrounds):
     :type background_images_dir: str
     :param used_backgrounds: Set of filenames of the used background images.
     :type used_backgrounds: set
+    :param original_backgrounds: List of the original background images.
+    :type original_backgrounds: list
     :return: A random background image from the directory.
     :rtype: numpy.ndarray
-    :raises ValueError: If there are no available background images in the directory.
     """
-    available_images = list(set(os.listdir(background_images_dir)) - set(used_backgrounds))
+    if original_backgrounds is None:
+        original_backgrounds = os.listdir(background_images_dir)
+    available_images = list(set(original_backgrounds) - used_backgrounds)
     if not available_images:
-        raise ValueError("No available background images.")
+        used_backgrounds.clear()
+        available_images = original_backgrounds
     
     chosen_image = random.choice(available_images)
     used_backgrounds.add(chosen_image)
     
     return cv2.imread(os.path.join(background_images_dir, chosen_image), cv2.IMREAD_COLOR)
+
 
 def generate_random_background(shape):
     """

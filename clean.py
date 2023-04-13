@@ -13,3 +13,4 @@ def cleanup_modified_images(dirs_to_clean):
 
 dirs_to_clean = ['modified_images/mask', 'modified_images/with_bg']
 cleanup_modified_images(dirs_to_clean)
+

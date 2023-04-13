@@ -11,15 +11,18 @@ def create_binary_mask(image, mask_output_dir, index):
     :param mask_output_dir: output directory for the binary mask
     :param index: index of the image used for naming the output file
     """
-    # Extract the alpha channel from the image
-    alpha_channel = image[:, :, 3]
+    try:
+        # Extract the alpha channel from the image
+        alpha_channel = image[:, :, 3]
 
-    # Create a binary mask using the alpha channel
-    binary_mask = cv2.threshold(alpha_channel, 0, 255, cv2.THRESH_BINARY)[1]
+        # Create a binary mask using the alpha channel
+        binary_mask = cv2.threshold(alpha_channel, 0, 255, cv2.THRESH_BINARY)[1]
 
-    # Save the binary mask
-    output_path = os.path.join(mask_output_dir, f"{index}_mask.png")
-    cv2.imwrite(output_path, binary_mask)
+        # Save the binary mask
+        output_path = os.path.join(mask_output_dir, f"{index}_mask.png")
+        cv2.imwrite(output_path, binary_mask)
+    except IndexError:
+        print(f"Skipping image {index} due to IndexError (missing alpha channel)")
 
 def add_selected_background(image, bg_output_dir, index, background_images_dir, used_backgrounds):
     """
@@ -31,23 +34,27 @@ def add_selected_background(image, bg_output_dir, index, background_images_dir, 
     :param background_images_dir: directory containing background images
     :param used_backgrounds: set of used background image filenames to prevent repetition
     """
-    # Get a random background image from the background_images_dir
-    background_image = get_random_background_image(background_images_dir, used_backgrounds)
+    try:
+        # Get a random background image from the background_images_dir
+        background_image = get_random_background_image(background_images_dir, used_backgrounds)
 
-    # Combine the original image with the selected background
-    foreground = image.copy()    
-    background = cv2.resize(background_image, (image.shape[1], image.shape[0]))
-    alpha = foreground[:, :, 3] / 255.0
-    alpha_expanded = np.repeat(alpha[:, :, np.newaxis], 3, axis=2)
+        # Combine the original image with the selected background
+        foreground = image.copy()    
+        background = cv2.resize(background_image, (image.shape[1], image.shape[0]))
+        alpha = foreground[:, :, 3] / 255.0
+        alpha_expanded = np.repeat(alpha[:, :, np.newaxis], 3, axis=2)
 
-    # Blend the foreground and background images using the alpha channel
-    result = cv2.multiply(alpha_expanded, foreground[:, :, :3].astype(float)) + \
-             cv2.multiply(1 - alpha_expanded, background.astype(float))
-    result = result.astype(np.uint8)
+        # Blend the foreground and background images using the alpha channel
+        result = cv2.multiply(alpha_expanded, foreground[:, :, :3].astype(float)) + \
+                cv2.multiply(1 - alpha_expanded, background.astype(float))
+        result = result.astype(np.uint8)
 
-    # Save the image with the selected background
-    output_path = os.path.join(bg_output_dir, f"{index}_with_selected_bg.png")
-    cv2.imwrite(output_path, result)
+        # Save the image with the selected background
+        output_path = os.path.join(bg_output_dir, f"{index}_with_selected_bg.png")
+        cv2.imwrite(output_path, result)
+    except IndexError:
+        print(f"Skipping image {index} due to IndexError (missing alpha channel)")
+
 
 def add_random_background(image, bg_output_dir, index):
     """
@@ -57,24 +64,27 @@ def add_random_background(image, bg_output_dir, index):
     :param bg_output_dir: output directory for the image with the random background
     :param index: index of the image used for naming the output file
     """
-    # Generate a random background
-    random_bg = generate_random_background(image.shape)
+    try:
+        # Generate a random background
+        random_bg = generate_random_background(image.shape)
 
-    # Combine the original image with the random background
-    foreground = cv2.cvtColor(image, cv2.COLOR_BGRA2RGBA)
-    background = cv2.cvtColor(random_bg, cv2.COLOR_BGR2RGB)
-    alpha = foreground[:, :, 3] / 255.0
-    alpha_expanded = np.repeat(alpha[:, :, np.newaxis], 3, axis=2)
-    
-    # Blend the foreground and background images using the alpha channel
-    result = cv2.multiply(alpha_expanded, foreground[:, :, :3].astype(float)) + \
-             cv2.multiply(1 - alpha_expanded, background.astype(float))
-    result = result.astype(np.uint8)
+        # Combine the original image with the random background
+        foreground = cv2.cvtColor(image, cv2.COLOR_BGRA2RGBA)
+        background = cv2.cvtColor(random_bg, cv2.COLOR_BGR2RGB)
+        alpha = foreground[:, :, 3] / 255.0
+        alpha_expanded = np.repeat(alpha[:, :, np.newaxis], 3, axis=2)
+        
+        # Blend the foreground and background images using the alpha channel
+        result = cv2.multiply(alpha_expanded, foreground[:, :, :3].astype(float)) + \
+                cv2.multiply(1 - alpha_expanded, background.astype(float))
+        result = result.astype(np.uint8)
 
-    # Save the image with the random background
-    output_path = os.path.join(bg_output_dir, f"{index}_with_bg.png")
-    cv2.imwrite(output_path, cv2.cvtColor(result, cv2.COLOR_RGB2BGR))
-    # print(f"Image with random background saved at {output_path}")
+        # Save the image with the random background
+        output_path = os.path.join(bg_output_dir, f"{index}_with_bg.png")
+        cv2.imwrite(output_path, cv2.cvtColor(result, cv2.COLOR_RGB2BGR))
+        # print(f"Image with random background saved at {output_path}")
+    except IndexError:
+        print(f"Skipping image {index} due to IndexError (missing alpha channel)")
 
 def process_images(input_dir, mask_output_dir, bg_output_dir, background_images_dir):
     """
@@ -95,7 +105,7 @@ def process_images(input_dir, mask_output_dir, bg_output_dir, background_images_
     used_backgrounds = set()
     # Loop through all images in the input directory
     for index, filename in enumerate(os.listdir(input_dir), start=1):
-        if index % 10 == 0:
+        if index % 100 == 0:
             print(f"Processed {index} images")
         if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
             input_image_path = os.path.join(input_dir, filename)
