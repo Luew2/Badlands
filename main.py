@@ -1,9 +1,9 @@
 from image_processing import process_images
 
 if __name__ == "__main__":
-    input_dir = "original_images"
-    mask_output_dir = "modified_images/mask"
-    bg_output_dir = "modified_images/with_bg"
+    input_dir = "stickers"
+    mask_output_dir = "modified_images/mask_2"
+    bg_output_dir = "modified_images/with_bg_2"
     background_images_dir = "background_images"
 
     print("Processing images...")
