@@ -46,7 +46,7 @@ def add_selected_background(image, bg_output_dir, index, background_images_dir, 
     result = result.astype(np.uint8)
 
     # Save the image with the selected background
-    output_path = os.path.join(bg_output_dir, f"{index}_with-selected-bg.png")
+    output_path = os.path.join(bg_output_dir, f"{index}_with_selected_bg.png")
     cv2.imwrite(output_path, result)
 
 def add_random_background(image, bg_output_dir, index):
@@ -72,7 +72,7 @@ def add_random_background(image, bg_output_dir, index):
     result = result.astype(np.uint8)
 
     # Save the image with the random background
-    output_path = os.path.join(bg_output_dir, f"{index}_with-bg.png")
+    output_path = os.path.join(bg_output_dir, f"{index}_with_bg.png")
     cv2.imwrite(output_path, cv2.cvtColor(result, cv2.COLOR_RGB2BGR))
     # print(f"Image with random background saved at {output_path}")
 
