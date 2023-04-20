@@ -19,7 +19,7 @@ def create_binary_mask(image, mask_output_dir, index):
         binary_mask = cv2.threshold(alpha_channel, 0, 255, cv2.THRESH_BINARY)[1]
 
         # Save the binary mask
-        output_path = os.path.join(mask_output_dir, f"{index}_mask.png")
+        output_path = os.path.join(mask_output_dir, f"{index}.png")
         cv2.imwrite(output_path, binary_mask)
     except IndexError:
         print(f"Skipping image {index} due to IndexError (missing alpha channel)")
@@ -80,7 +80,7 @@ def add_random_background(image, bg_output_dir, index):
         result = result.astype(np.uint8)
 
         # Save the image with the random background
-        output_path = os.path.join(bg_output_dir, f"{index}_with_bg.png")
+        output_path = os.path.join(bg_output_dir, f"{index}.jpg")
         cv2.imwrite(output_path, cv2.cvtColor(result, cv2.COLOR_RGB2BGR))
         # print(f"Image with random background saved at {output_path}")
     except IndexError:
@@ -112,4 +112,4 @@ def process_images(input_dir, mask_output_dir, bg_output_dir, background_images_
             image = cv2.imread(input_image_path, cv2.IMREAD_UNCHANGED)
             create_binary_mask(image, mask_output_dir, index)
             add_random_background(image, bg_output_dir, index)
-            add_selected_background(image, bg_output_dir, index, background_images_dir, used_backgrounds)
+            # add_selected_background(image, bg_output_dir, index, background_images_dir, used_backgrounds)
